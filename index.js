@@ -1,26 +1,59 @@
 /* eslint-disable semi */
-const country = document.querySelector('#country')
-const city = document.querySelector('#city')
-const result = document.querySelector('.result')
+const baseUrl = `http://api.exchangeratesapi.io/v1/`
+const endPoint = `latest?`
+const apiKey = `9ded7bcb3ad506b5714121e93877a9cd`
+const querryURL = `${baseUrl}${endPoint}access_key=${apiKey}`
 
-const cityArr = {
-  rus: ['Москва', 'Санк-Петербург', 'Новосибирск', 'Екатеринбург', 'Нижний Новгород', 'Казань', 'Челябинск'],
-  uk: ['Киев', 'Харьков', 'Одесса', 'Днепр', 'Донецк', 'Запорожье', 'Львов'],
-  bel: ['Минск', 'Гомель', 'Могилёв', 'Витебск', 'Гродно', 'Брест'],
-  jap: ['Токио', 'Киото', 'Осака', 'Иокогама']
+const input = document.getElementById('in')
+const outUsd = document.getElementById('out')
+const button = document.getElementById('button')
+const buttonClear = document.getElementById('buttonClear')
+const inputRub = document.getElementById('inRub')
+const outInputRub = document.getElementById('outRub')
+const inputs = [...document.getElementsByTagName('input')]
+const parent = document.querySelector('.parent')
+
+let usd = null
+let rub = null
+
+async function getData() {
+  const url = querryURL
+  return await fetch(url)
 }
 
-const showCities = (e) => {
-  let target = e.value
-  let strUser = e.target.options
-  console.log("🚀 ~ file: index.js ~ line 16 ~ showCities ~ strUser", strUser)
-  const vals = [...country.options].map(el => el.value)
-  if (vals[0]) {
-    city.style.display = 'flex'
+const getRates = rates => {
+  usd = rates.USD
+  rub = rates.RUB
+}
 
+const calcRub = () => {
+  const outRub = (+input.value / usd * rub).toFixed(2)
+  outUsd.value = outRub + ' RUB'
+}
+
+const calcUsd = () => {
+  const outInUsd = (+inputRub.value / rub * usd).toFixed(2)
+  outInputRub.value = outInUsd + ' BUCKS'
+}
+
+const clearInputs = inputs => {
+  inputs.forEach(el => el.value = '')
+}
+
+parent.addEventListener('click', e => {
+  const t = e.target
+  if (t === button && input.value !== '') {
+    calcRub()
   }
-  console.log()
-  cityArr.forEach(el => console.log(el))
-}
+  if (t === button && inputRub.value !== '') {
+    calcUsd()
+  }
+  if (t === buttonClear) {
+    clearInputs(inputs)
+  }
+})
 
-country.addEventListener('change', showCities)
+getData()
+  .then(res => res.json())
+  .then(res => getRates(res.rates))
+
