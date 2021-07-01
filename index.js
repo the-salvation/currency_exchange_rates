@@ -11,14 +11,13 @@ const buttonClear = document.getElementById('buttonClear')
 const inputRub = document.getElementById('inRub')
 const outInputRub = document.getElementById('outRub')
 const inputs = [...document.getElementsByTagName('input')]
-const parent = document.querySelector('.parent')
+const parentButtons = document.querySelector('.parent')
 
 let usd = null
 let rub = null
 
 async function getData() {
-  const url = querryURL
-  return await fetch(url)
+  return await fetch(querryURL)
 }
 
 const getRates = rates => {
@@ -40,7 +39,7 @@ const clearInputs = inputs => {
   inputs.forEach(el => el.value = '')
 }
 
-parent.addEventListener('click', e => {
+parentButtons.addEventListener('click', e => {
   const t = e.target
   if (t === button && input.value !== '') {
     calcRub()
